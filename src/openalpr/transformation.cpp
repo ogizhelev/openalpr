@@ -96,53 +96,47 @@ namespace alpr
     // Apply perspective transformation to the image
     warpPerspective(this->bigImage, deskewed, transformationMatrix, deskewed.size(), INTER_CUBIC);
 
-
-
-
     return deskewed;
   }
 
-  vector<Point2f> Transformation::remapSmallPointstoCrop(vector<Point> smallPoints, cv::Mat transformationMatrix)
+  std::vector<cv::Point2f> Transformation::findPlateCorners(cv::Mat gray)
   {
-    vector<Point2f> floatPoints;
-    for (unsigned int i = 0; i < smallPoints.size(); i++)
-      floatPoints.push_back(smallPoints[i]);
+    std::vector<cv::Point2f> corners;
 
-    return remapSmallPointstoCrop(floatPoints, transformationMatrix);
-  }
+    // Threshold the image
+    cv::Mat thresholded;
+    cv::threshold(gray, thresholded, 0, 255, cv::THRESH_BINARY | cv::THRESH_OTSU);
 
-  vector<Point2f> Transformation::remapSmallPointstoCrop(vector<Point2f> smallPoints, cv::Mat transformationMatrix)
-  {
-    vector<Point2f> remappedPoints;
-    perspectiveTransform(smallPoints, remappedPoints, transformationMatrix);
+    // Find contours
+    std::vector<std::vector<cv::Point> > contours;
+    cv::findContours(thresholded, contours, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
 
-    return remappedPoints;
-  }
-
-  Size Transformation::getCropSize(vector<Point2f> areaCorners, Size targetSize)
-  {
-    // Figure out the approximate width/height of the license plate region, so we can maintain the aspect ratio.
-    LineSegment leftEdge(round(areaCorners[3].x), round(areaCorners[3].y), round(areaCorners[0].x), round(areaCorners[0].y));
-    LineSegment rightEdge(round(areaCorners[2].x), round(areaCorners[2].y), round(areaCorners[1].x), round(areaCorners[1].y));
-    LineSegment topEdge(round(areaCorners[0].x), round(areaCorners[0].y), round(areaCorners[1].x), round(areaCorners[1].y));
-    LineSegment bottomEdge(round(areaCorners[3].x), round(areaCorners[3].y), round(areaCorners[2].x), round(areaCorners[2].y));
-
-    float w = distanceBetweenPoints(leftEdge.midpoint(), rightEdge.midpoint());
-    float h = distanceBetweenPoints(bottomEdge.midpoint(), topEdge.midpoint());
-    
-    if (w <= 0 || h <= 0)
-      return Size(0,0);
-    
-    float aspect = w/h;
-    int width = targetSize.width;
-    int height = round(((float) width) / aspect);
-    if (height > targetSize.height)
+    // Find the largest contour
+    double max_area = 0;
+    std::vector<cv::Point> best_contour;
+    for (size_t i = 0; i < contours.size(); i++)
     {
-      height = targetSize.height;
-      width = round(((float) height) * aspect);
+      double area = cv::contourArea(contours[i]);
+      if (area > max_area)
+      {
+        max_area = area;
+        best_contour = contours[i];
+      }
     }
 
-    return Size(width, height);
+    if (best_contour.empty())
+      return corners;
+
+    // Approximate the contour to a polygon
+    std::vector<cv::Point> approx_poly;
+    cv::approxPolyDP(best_contour, approx_poly, cv::arcLength(best_contour, true) * 0.02, true);
+
+    if (approx_poly.size() == 4)
+    {
+      for(int i = 0; i < 4; i++)
+        corners.push_back(approx_poly[i]);
+    }
+
+    return corners;
   }
-  
 }

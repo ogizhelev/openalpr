@@ -139,6 +139,8 @@ namespace alpr
       bool debugShowImages;
       bool debugPauseOnFrame;
 
+      bool use_perspective_correction;
+
       void setDebug(bool value);
 
       std::string getKeypointsRuntimeDir();

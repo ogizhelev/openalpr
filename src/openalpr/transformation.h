@@ -43,6 +43,7 @@ namespace alpr
 
     cv::Size getCropSize(std::vector<cv::Point2f> areaCorners, cv::Size targetSize);
 
+    static std::vector<cv::Point2f> findPlateCorners(cv::Mat gray);
   private:
     cv::Mat bigImage;
     cv::Mat smallImage;

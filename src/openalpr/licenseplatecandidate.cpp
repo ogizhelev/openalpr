@@ -60,7 +60,14 @@ namespace alpr
 
     EdgeFinder edgeFinder(pipeline_data);
 
-    pipeline_data->plate_corners = edgeFinder.findEdgeCorners();
+    if (config->use_perspective_correction)
+    {
+        pipeline_data->plate_corners = Transformation::findPlateCorners(pipeline_data->crop_gray);
+    }
+    else
+    {
+        pipeline_data->plate_corners = edgeFinder.findEdgeCorners();
+    }
 
     if (pipeline_data->disqualified)
       return;
