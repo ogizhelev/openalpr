@@ -26,7 +26,7 @@
 namespace alpr
 {
 
-  class Transformation {
+  class alpr_EXPORT Transformation {
   public:
     Transformation(cv::Mat bigImage, cv::Mat smallImage, cv::Rect regionInBigImage);
     virtual ~Transformation();
