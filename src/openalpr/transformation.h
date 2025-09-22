@@ -20,7 +20,7 @@
 #ifndef OPENALPR_TRANSFORMATION_H
 #define	OPENALPR_TRANSFORMATION_H
 
-#include "exports.h"
+#include "alpr.h"
 #include "opencv2/imgproc/imgproc.hpp"
 #include "utility.h"
 
