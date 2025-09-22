@@ -1,6 +1,3 @@
-
-
-
 set(lpr_source_files
  alpr.cpp
  alpr_impl.cpp
@@ -34,6 +31,7 @@ set(lpr_source_files
  colorfilter.cpp
  prewarp.cpp
  transformation.cpp
+ utility.cpp
  textdetection/characteranalysis.cpp
  textdetection/platemask.cpp
  textdetection/textcontours.cpp
