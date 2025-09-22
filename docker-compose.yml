@@ -1,8 +1,10 @@
-version: "3.9"
 services:
   alpr-server:
     container_name: alpr-server
-    image: alpr-server:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: openalpr:v1
     restart: unless-stopped
     ports:
       - "8000:8000"
