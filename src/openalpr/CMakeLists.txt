@@ -52,6 +52,8 @@ add_subdirectory(support)
 add_library(openalpr-static 	STATIC ${lpr_source_files} )
 add_library(openalpr 		SHARED ${lpr_source_files} )
 
+include_directories(${PROJECT_BINARY_DIR})
+
 set_target_properties(openalpr PROPERTIES SOVERSION ${OPENALPR_MAJOR_VERSION})
 
 TARGET_LINK_LIBRARIES(openalpr
